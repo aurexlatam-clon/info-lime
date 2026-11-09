@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#080b09"/>
+<meta name="robots" content="noindex,nofollow"/>
+<title>Lime Company | Generador de enlaces para equipo</title>
+<style>
+:root{--bg:#080b09;--p:#111912;--line:rgba(158,240,26,.22);--lime:#9ef01a;--text:#f1f4ee;--muted:#b4c1b2}
+*{box-sizing:border-box} body{margin:0;min-height:100vh;background:radial-gradient(ellipse 65% 40% at 80% 0%,rgba(158,240,26,.085),transparent),var(--bg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text)}
+main{max-width:650px;margin:0 auto;padding:50px 22px 72px}
+.logo{letter-spacing:-.05em;color:var(--lime);font-size:27px;font-weight:850;line-height:1}.logo small{display:block;font-size:9px;letter-spacing:.46em;margin-top:7px;color:#d8e0d1}
+.eyebrow{letter-spacing:.13em;font-weight:700;font-size:11px;color:var(--lime);text-transform:uppercase;margin:55px 0 12px}
+h1{font-size:clamp(36px,7vw,56px);line-height:1.06;letter-spacing:-.055em;margin:0 0 20px}h1 span{color:var(--lime)}
+p{color:var(--muted)}.lead{font-size:17px;margin-bottom:28px}
+.panel{background:linear-gradient(145deg,rgba(21,31,19,.97),rgba(12,17,13,.98));border:1px solid var(--line);border-radius:20px;padding:26px;box-shadow:0 20px 50px rgba(0,0,0,.26)}
+label{display:block;font-weight:750;margin-bottom:8px}input{appearance:none;display:block;width:100%;border-radius:11px;border:1px solid #4a5845;background:#091009;color:#fff;padding:15px;font:inherit;outline:none} input:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(158,240,26,.1)}
+.hint{font-size:13px;margin:8px 0 20px}.btn{display:inline-flex;justify-content:center;align-items:center;text-align:center;gap:9px;min-height:48px;border-radius:11px;padding:12px 20px;border:1px solid rgba(158,240,26,.48);font:750 14px/1.2 system-ui,sans-serif;cursor:pointer;text-decoration:none;color:#eaffdb;background:#151e14}.btn.main{color:#10160c;background:var(--lime);border-color:var(--lime)}.btn[disabled]{opacity:.5;cursor:not-allowed}.btnrow{display:flex;gap:9px;flex-wrap:wrap}.btnrow>*{flex:1}
+.error{font-weight:600;color:#f4aba2;font-size:13px;min-height:0}.result{display:none;margin-top:22px}.result.active{display:block}.url{font-size:13px;line-height:1.6;word-break:break-all;background:#080e08;padding:13px;border-radius:10px;border:1px solid rgba(158,240,26,.19);color:#e0f4c8;margin:10px 0 14px}.status{color:var(--lime);font-size:13px;min-height:16px;margin-top:10px}
+.note{border-left:2px solid var(--lime);padding-left:14px;margin:25px 0;font-size:14px;color:#c7d3c2}
+footer{margin-top:35px;font-size:12px;color:#859284}.smalllink{color:var(--lime);text-underline-offset:4px}
+@media(max-width:470px){.panel{padding:22px 18px}.btnrow{flex-direction:column}.eyebrow{margin-top:40px}}
+</style></head><body>
+<main>
+<header><div class="logo">LIME<small>COMPANY</small></div></header>
+<p class="eyebrow">Herramienta para el equipo</p>
+<h1>Tu mismo funnel.<br/><span>Tu propio WhatsApp.</span></h1>
+<p class="lead">Crea tu enlace personal sin modificar la página. Los visitantes verán el mismo funnel, pero todos sus botones de contacto abrirán una conversación contigo.</p>
+<div class="panel">
+<form id="generator" novalidate>
+<label for="phone">Tu número de WhatsApp</label>
+<input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Ejemplo México: 52 987 123 4567" required aria-describedby="phone-hint error"/>
+<p class="hint" id="phone-hint">Incluye el código de país, sin el signo +. Para México: 52 y tus diez dígitos.</p>
+<p class="error" id="error" role="alert"></p>
+<button class="btn main" type="submit">Generar mi enlace →</button>
+</form>
+<section id="result" class="result" aria-live="polite">
+<label>Tu enlace personalizado</label>
+<div class="url" id="url-display"></div>
+<div class="btnrow"><button class="btn main" type="button" id="copy">Copiar enlace</button><a class="btn" id="open" href="#" target="_blank" rel="noopener">Probar enlace</a><button class="btn" type="button" id="share">Compartir</button></div>
+<div class="status" id="status" aria-live="polite"></div>
+</section>
+</div>
+<p class="note"><strong>Importante:</strong> comparte siempre el enlace completo que generaste. Si compartes la dirección general sin tu número, las consultas llegarán al WhatsApp predeterminado del equipo.</p>
+<p><a class="smalllink" id="main-link" href="./">Ver el funnel general</a></p>
+<footer>Esta herramienta no almacena tu teléfono. Solo crea un enlace para que lo compartas.</footer>
+</main>
+<script>
+(()=>{
+  'use strict';
+  const form=document.getElementById('generator');
+  const phone=document.getElementById('phone');
+  const error=document.getElementById('error');
+  const result=document.getElementById('result');
+  const urlDisplay=document.getElementById('url-display');
+  const open=document.getElementById('open');
+  const status=document.getElementById('status');
+  let personalUrl='';
+  form.addEventListener('submit',ev=>{
+    ev.preventDefault();
+    status.textContent='';
+    const digits=phone.value.replace(/\D/g,'');
+    if (!/^[1-9]\d{7,14}$/.test(digits)) {
+      error.textContent='Escribe un número internacional válido, con código de país y entre 8 y 15 dígitos.';
+      result.classList.remove('active');return;
+    }
+    error.textContent='';
+    if (!/^https?:$/.test(location.protocol)) {
+      error.textContent='Abre esta herramienta desde el enlace público del funnel en Vercel para crear tu enlace.';
+      result.classList.remove('active');return;
+    }
+    const url = new URL('./', window.location.href);
+    url.searchParams.set('wa',digits);
+    personalUrl=url.toString();
+    urlDisplay.textContent=personalUrl;
+    open.href=personalUrl;
+    result.classList.add('active');
+    status.textContent='Listo. Este enlace dirige todos los botones de contacto a tu WhatsApp.';
+  });
+  document.getElementById('copy').addEventListener('click',async()=>{
+    if(!personalUrl)return;
+    try{await navigator.clipboard.writeText(personalUrl);status.textContent='Enlace copiado. Puedes enviarlo por WhatsApp.'}
+    catch(e){const x=document.createElement('textarea');x.value=personalUrl;document.body.appendChild(x);x.select();const ok=document.execCommand('copy');x.remove();status.textContent=ok?'Enlace copiado.':'Selecciona y copia el enlace mostrado.'}
+  });
+  document.getElementById('share').addEventListener('click',async()=>{
+    if(!personalUrl)return;
+    if(navigator.share){try{await navigator.share({title:'Lime Company',text:'Conoce la información de Lime Company:',url:personalUrl});}catch(e){} }
+    else window.open('https://wa.me/?text='+encodeURIComponent('Conoce la información de Lime Company: '+personalUrl),'_blank','noopener');
+  });
+})();
+</script></body></html>
